@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\AuthService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -31,6 +32,11 @@ class AuthController extends Controller
             if(!$login){
                 return ApiResponse::error('Invalid Credentials',401);
             }
+
+            if(! Auth::user()->hasVerifiedEmail()){
+                return ApiResponse::error('Email not verified. A new verification link has been sent to your email.',403);
+            }
+
 
             return ApiResponse::success($login, 'Login successful');
 
@@ -64,9 +70,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->input('password')),
         ]);
 
+        $user->sendEmailVerificationNotification();
+
         return ApiResponse::success(
             $user,
-            'User created successfully',
+            'User registered. Please check your email for verification link.',
             201
         );
 

@@ -2,7 +2,9 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\TokenException;
 use App\Models\RefreshToken;
+use App\Models\User;
 use App\Repositories\Contracts\AuthRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Auth\AuthenticationException;
@@ -45,6 +47,14 @@ class AuthRepository implements AuthRepositoryInterface {
             'expires_in'    => JWTAuth::factory()->getTTL() * 60,
             'refresh_token' => $refreshToken, // reuse same refresh token
         ]; 
+    }
+
+    public function findUser(int $user_id): array{
+       return  User::find($user_id);
+    }
+
+    public function isVerified(int $user_id){
+        return User::whereNotNull('email_verified_at')->exist();
     }
 
     public function isRefreshTokenValid(string $user_id){

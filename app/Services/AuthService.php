@@ -32,7 +32,7 @@ class AuthService{
             return null;
         }
 
-        $user = auth()->user();
+        $user = Auth::user();
 
          // Check if a valid refresh token exists
         $refreshTokenModel = $this->authRepo->isRefreshTokenValid($user->id);
